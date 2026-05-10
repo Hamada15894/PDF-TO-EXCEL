@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)file:///C:/Users/Hamada.Ali/Downloads/RTV_Converter%20(3).html -->
+<html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RTV Excel Converter v5</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{--bg:#0f1117;--sf:#181c26;--sf2:#1e2330;--bd:#2a3045;--bd2:#3a4460;--ac:#3b82f6;--ac2:#60a5fa;--gn:#22c55e;--gnb:#052e16;--rd:#ef4444;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;--mn:'IBM Plex Mono',monospace;--sn:'IBM Plex Sans Arabic',sans-serif;--r:10px;--r2:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sn);background:var(--bg);color:var(--tx);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:40px 40px;opacity:.22;pointer-events:none;z-index:0}
+.glow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.09) 0%,transparent 70%);pointer-events:none;top:-150px;left:50%;transform:translateX(-50%);z-index:0}
+.wrap{position:relative;z-index:1;max-width:740px;margin:0 auto;padding:48px 24px 80px}
+header{display:flex;align-items:center;gap:16px;margin-bottom:44px}
+.lm{width:48px;height:48px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lm svg{width:26px;height:26px;fill:white}
+.lt h1{font-size:22px;font-weight:600;letter-spacing:-.3px;line-height:1.2}
+.lt p{font-size:13px;color:var(--tx2);margin-top:2px;font-weight:300}
+.bv{margin-right:auto;font-family:var(--mn);font-size:11px;color:var(--ac2);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);padding:3px 10px;border-radius:99px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:24px;margin-bottom:16px}
+.clabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.clabel::after{content:'';flex:1;height:1px;background:var(--bd)}
+.dz{border:1.5px dashed var(--bd2);border-radius:var(--r);padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s}
+.dz:hover,.dz.drag{border-color:var(--ac);background:rgba(59,130,246,.04)}
+.di{width:52px;height:52px;background:var(--sf2);border:1px solid var(--bd);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.di svg{width:26px;height:26px;stroke:var(--ac2);fill:none;stroke-width:1.5}
+.dz h3{font-size:15px;font-weight:500;margin-bottom:6px}
+.dz p{font-size:12px;color:var(--tx2);line-height:1.6}
+.kbd{display:inline-block;font-family:var(--mn);font-size:11px;background:var(--sf2);border:1px solid var(--bd2);border-radius:4px;padding:1px 6px;color:var(--ac2);margin-top:10px}
+input[type=file]{display:none}
+.fl{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.fi{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r2);font-size:13px;animation:si .2s ease}
+@keyframes si{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.fic{width:32px;height:32px;background:rgba(59,130,246,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fic svg{width:16px;height:16px;stroke:var(--ac2);fill:none;stroke-width:1.5}
+.fn{flex:1;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fsz{font-size:11px;color:var(--tx3);font-family:var(--mn);white-space:nowrap}
+.badge{font-size:11px;font-family:var(--mn);padding:3px 10px;border-radius:99px;white-space:nowrap;font-weight:500}
+.bw{background:var(--sf2);color:var(--tx3);border:1px solid var(--bd)}
+.bp{background:rgba(59,130,246,.15);color:var(--ac2);border:1px solid rgba(59,130,246,.3);animation:pulse 1s infinite}
+.bok{background:rgba(34,197,94,.12);color:var(--gn);border:1px solid rgba(34,197,94,.25)}
+.ber{background:rgba(239,68,68,.12);color:var(--rd);border:1px solid rgba(239,68,68,.25)}
+.bocr{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.sm{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sf2);border:1px dashed var(--bd2);border-radius:var(--r2);cursor:pointer;transition:all .2s;font-size:13px}
+.sm:hover{border-color:var(--ac);background:rgba(59,130,246,.04)}
+.sm svg{width:18px;height:18px;stroke:var(--tx3);fill:none;stroke-width:1.5;flex-shrink:0}
+.ss_{flex:1;color:var(--tx2)}.ss_ span{color:var(--gn);font-size:11px;font-family:var(--mn)}
+.sc{font-size:11px;color:var(--ac2);white-space:nowrap}
+.pw{margin:16px 0 12px}
+.pm{display:flex;justify-content:space-between;font-size:12px;color:var(--tx2);margin-bottom:8px;font-family:var(--mn)}
+.pt{height:3px;background:var(--bd);border-radius:99px;overflow:hidden}
+.pf_{height:100%;background:linear-gradient(90deg,#1d4ed8,#60a5fa);border-radius:99px;transition:width .4s ease;width:0%}
+.btn-run{width:100%;padding:14px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;font-family:var(--sn);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s;margin-top:4px;box-shadow:0 0 40px rgba(59,130,246,.2)}
+.btn-run:hover:not(:disabled){opacity:.9}.btn-run:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn-run svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;flex-shrink:0}
+.btn-reset{width:100%;padding:11px;background:transparent;color:var(--tx2);border:1px solid var(--bd2);border-radius:var(--r2);font-size:13px;font-family:var(--sn);cursor:pointer;margin-top:10px;transition:all .2s}
+.btn-reset:hover{background:var(--sf2);color:var(--tx)}
+.rb{background:rgba(22,101,52,.12);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);padding:32px 24px;text-align:center}
+.rc{width:56px;height:56px;background:var(--gnb);border:1px solid rgba(34,197,94,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.rc svg{width:28px;height:28px;stroke:var(--gn);fill:none;stroke-width:2}
+.rb h2{font-size:18px;font-weight:600;color:var(--gn);margin-bottom:6px}
+.rb p{font-size:13px;color:rgba(134,239,172,.7);margin-bottom:24px}
+.btn-dl{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--gn);color:#052e16;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sn);cursor:pointer;text-decoration:none;transition:opacity .15s}
+.btn-dl:hover{opacity:.9}
+.btn-dl svg{width:16px;height:16px;stroke:#052e16;fill:none;stroke-width:2.5}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.sbx{background:rgba(0,0,0,.3);border:1px solid rgba(34,197,94,.15);border-radius:var(--r2);padding:14px;text-align:center}
+.snn{font-size:28px;font-weight:600;color:var(--gn);font-family:var(--mn)}
+.sll{font-size:11px;color:rgba(134,239,172,.6);margin-top:4px}
+.rn{font-size:11px;color:var(--tx3);margin-top:16px;font-family:var(--mn)}
+.logb{margin-top:12px;background:rgba(0,0,0,.5);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 14px;max-height:200px;overflow-y:auto;font-family:var(--mn);font-size:11px;color:var(--tx2);line-height:1.8;direction:ltr;text-align:left}
+.lok{color:var(--gn)}.ler{color:var(--rd)}.lin{color:var(--ac2)}.lamb{color:#f59e0b}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+<header>
+  <div class="lm"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:1.5"></polyline><line x1="16" y1="13" x2="8" y2="13" style="stroke:white;stroke-width:1.5"></line><line x1="16" y1="17" x2="8" y2="17" style="stroke:white;stroke-width:1.5"></line></svg></div>
+  <div class="lt"><h1>RTV Excel Converter</h1><p>تحويل مرتجعات PDF إلى Excel — العثيم · التميمي · الدانوب · فارم · ممسوحة ضوئياً</p></div>
+  <div class="bv">v5.0</div>
+</header>
+
+<div class="card" id="cu">
+  <div class="clabel">01 — رفع ملفات PDF</div>
+  <div class="dz" id="dz" onclick="document.getElementById(&#39;pi&#39;).click()">
+    <div class="di"><svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg></div>
+    <h3>اسحب ملفات PDF وأفلتها هنا</h3>
+    <p>يدعم مستندات العثيم، التميمي، الدانوب، فارم — رقمية أو ممسوحة ضوئياً</p>
+    <div class="kbd">اضغط للاختيار</div>
+  </div>
+  <input type="file" id="pi" multiple="" accept=".pdf">
+  <div class="fl" id="fl"></div>
+</div>
+
+<div class="card hidden" id="cst">
+  <div class="clabel">02 — ربط بيانات المتاجر</div>
+  <div class="sm" onclick="document.getElementById(&#39;si&#39;).click()">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <div class="ss_" id="ss_">لم يُرفع ملف — <span>سيُستخدم القاموس المدمج (78 متجر)</span></div>
+    <span class="sc">ارفع STORE_DATA.xlsx ←</span>
+  </div>
+  <input type="file" id="si" accept=".xlsx,.xls">
+</div>
+
+<div class="card hidden" id="cpr">
+  <div class="clabel">03 — المعالجة</div>
+  <div class="pw"><div class="pm"><span id="pl">جاهز</span><span id="pp" style="color:var(--ac2)">0%</span></div><div class="pt"><div class="pf_" id="pf_"></div></div></div>
+  <div class="fl" id="pfl"></div>
+  <div class="logb hidden" id="lb"></div>
+</div>
+
+<div class="hidden" id="ab">
+  <button class="btn-run" id="rb_" onclick="run()">
+    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>تحويل إلى Excel
+  </button>
+</div>
+
+<div class="hidden" id="cr">
+  <div class="rb">
+    <div class="rc"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    <h2>اكتمل بنجاح</h2><p id="rd_">—</p>
+    <a id="dl" class="btn-dl" download="RTV_Report.xlsx">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>تحميل ملف Excel
+    </a>
+    <div class="sg">
+      <div class="sbx"><div class="snn" id="sd">0</div><div class="sll">وثيقة</div></div>
+      <div class="sbx"><div class="snn" id="si_">0</div><div class="sll">سطر منتج</div></div>
+      <div class="sbx"><div class="snn" id="sa">0</div><div class="sll">حساب</div></div>
+    </div>
+    <div class="rn">ورقتان: تفصيل المنتجات · ملخص بالحسابات</div>
+  </div>
+  <button class="btn-reset" onclick="reset_()">↺ معالجة ملفات جديدة</button>
+</div>
+</div>
+
+<script src="./RTV Excel Converter v5_files/pdf.min.js.download"></script>
+<script src="./RTV Excel Converter v5_files/xlsx.full.min.js.download"></script>
+<script src="./RTV Excel Converter v5_files/tesseract.min.js.download"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const $=id=>document.getElementById(id);
+let FILES=[],STORE=null,OCR_WORKER=null;
+
+// ─── STORE DB (78 stores) ──────────────────────────────────────────
+const DB={
+  100:{a:'Othaim',c:'10454540',n:'100-OTH HYP Hail Mall',ci:'Hail',s:'Sarsik'},
+  112:{a:'Othaim',c:'10454547',n:'112-OTH S/M FYZIA DIST',ci:'Buraida',s:'Mostafa'},
+  126:{a:'Othaim',c:'10454556',n:'126-OTH RKN Thoaibya',ci:'Hafer Al Batin',s:'Jamal'},
+  134:{a:'Othaim',c:'10455186',n:'134-OTH S/M Qurayyat 1',ci:'Quarrayat',s:'Ossama'},
+  136:{a:'Othaim',c:'10454563',n:'136-OTH S/M Turaif',ci:'Turaif',s:'Ossama'},
+  142:{a:'Othaim',c:'10454569',n:'142-OTH S/M Rwd Sudayr',ci:'Majma',s:'Ibrahim'},
+  14:{a:'Othaim',c:'10454488',n:'14-OTH S/M Shaqra',ci:'Shaqra',s:'Abdelhamid'},
+  155:{a:'Othaim',c:'10454580',n:'155-OTH S/M Arar',ci:'Arar',s:'Ossama'},
+  160:{a:'Othaim',c:'10454585',n:'160-OTH S/M Akeirsha',ci:'Buraida',s:'Mostafa'},
+  163:{a:'Othaim',c:'10454587',n:'163-OTH S/M Ros Center',ci:'Hafer Al Batin',s:'Jamal'},
+  167:{a:'Othaim',c:'10454591',n:'167-OTH S/M Barakateen',ci:'Buraida',s:'Mostafa'},
+  169:{a:'Othaim',c:'10454593',n:'169-OTH S/M Unizah new',ci:'Onaiza',s:'Mostafa'},
+  173:{a:'Othaim',c:'10454596',n:'173-OTH S/M Zolfee',ci:'Zulfi',s:'Mostafa'},
+  175:{a:'Othaim',c:'10454598',n:'175-OTH S/M Al Khabra',ci:'Buraida',s:'Ibrahim'},
+  185:{a:'Othaim',c:'10454605',n:'185-OTH S/M Nahadah',ci:'Buraida',s:'Mostafa'},
+  193:{a:'Othaim',c:'10454612',n:'193-OTH S/M Dawadmi',ci:'Duwadmi',s:'Abdelhamid'},
+  195:{a:'Othaim',c:'10454614',n:'195-OTH S/M Sajer',ci:'Sajer',s:'Abdelhamid'},
+  197:{a:'Othaim',c:'10454616',n:'197-OTH S/M Al Asyah',ci:'Buraida',s:'Ibrahim'},
+  199:{a:'Othaim',c:'10454618',n:'199-OTH S/M Al Ghat',ci:'Majma',s:'Mostafa'},
+  304:{a:'Othaim',c:'10454620',n:'304-OTH RKN Shamasiya',ci:'Buraida',s:'Ibrahim'},
+  309:{a:'Othaim',c:'10454623',n:'309-OTH S/M Quwayiyah',ci:'Duwadmi',s:'Abdelhamid'},
+  311:{a:'Othaim',c:'10454625',n:'311-OTH BURAIDAH',ci:'Buraida',s:'Mostafa'},
+  316:{a:'Othaim',c:'10454629',n:'316-OTH S/M AL ZULFI',ci:'Zulfi',s:'Mostafa'},
+  320:{a:'Othaim',c:'10454633',n:'320-OTH S/M AFIF',ci:'Duwadmi',s:'Abdelhamid'},
+  326:{a:'Othaim',c:'10454638',n:'326-OTH S/M Buraida',ci:'Buraida',s:'Mostafa'},
+  332:{a:'Othaim',c:'10454643',n:'332-OTH AL Khlij',ci:'Buraida',s:'Mostafa'},
+  340:{a:'Othaim',c:'10454649',n:'340-OTH S/M Al-Dhari',ci:'Duwadmi',s:'Abdelhamid'},
+  347:{a:'Othaim',c:'10454656',n:'347-OTH S/M Zolfee',ci:'Zulfi',s:'Mostafa'},
+  354:{a:'Othaim',c:'10454662',n:'354-OTH S/M Hafer Albatin',ci:'Hafer Al Batin',s:'Jamal'},
+  366:{a:'Othaim',c:'10455191',n:'366-OTH S/M Tabarjal',ci:'Quarrayat',s:'Ossama'},
+  367:{a:'Othaim',c:'10454670',n:'367-OTH S/M Dumat Aljandal',ci:'Sakaka',s:'Ossama'},
+  399:{a:'Othaim',c:'10454689',n:'399-OTH S/M Arar',ci:'Arar',s:'Ossama'},
+  403:{a:'Othaim',c:'10454690',n:'403-OTH S/M Al Nujra',ci:'Hail',s:'Sarsik'},
+  40:{a:'Othaim',c:'10454504',n:'40-OTH S/M Majma',ci:'Majma',s:'Ibrahim'},
+  423:{a:'Othaim',c:'17581343',n:'423-Othaim Samra Hail',ci:'Hail',s:'Sarsik'},
+  45:{a:'Othaim',c:'10454507',n:'45-OTH S/M El Mozneb',ci:'Muznab',s:'Mostafa'},
+  415:{a:'Othaim',c:'17585259',n:'415-OTH Al Khuzama Hail',ci:'Hail',s:'Sarsik'},
+  46:{a:'Othaim',c:'10454508',n:'46-OTH S/M Unaizah',ci:'Onaiza',s:'Mostafa'},
+  47:{a:'Othaim',c:'10454509',n:'47-OTH S/M Al Rass',ci:'Buraida',s:'Ibrahim'},
+  51:{a:'Othaim',c:'10454511',n:'51-OTH S/M Al Barakiya',ci:'Bakeriya',s:'Ibrahim'},
+  52:{a:'Othaim',c:'10454512',n:'52-OTH S/M Al Azizia',ci:'Hafer Al Batin',s:'Jamal'},
+  54:{a:'Othaim',c:'10454513',n:'54-OTH S/M RIY Kubra',ci:'Buraida',s:'Ibrahim'},
+  56:{a:'Othaim',c:'10454514',n:'56-OTH S/M Al Rabwa',ci:'Hafer Al Batin',s:'Jamal'},
+  57:{a:'Othaim',c:'10454515',n:'57-OTH S/M Skaka',ci:'Sakaka',s:'Ossama'},
+  71:{a:'Othaim',c:'10454521',n:'71-OTH S/M Badaya',ci:'Buraida',s:'Ibrahim'},
+  75:{a:'Othaim',c:'10454523',n:'75-OTH S/M Al Kaisuma',ci:'Hafer Al Batin',s:'Jamal'},
+  80:{a:'Othaim',c:'10454524',n:'80-OTH S/M Rafha',ci:'Hafer Al Batin',s:'Jamal'},
+  85:{a:'Othaim',c:'10454529',n:'85-OTH HYP Arar',ci:'Arar',s:'Ossama'},
+  95:{a:'Othaim',c:'10454536',n:'95-OTH S/M 5000 KKMC',ci:'Hafer Al Batin',s:'Jamal'},
+  151:{a:'Othaim',c:'10455188',n:'151-OTH S/M Qurayyat 2',ci:'Quarrayat',s:'Ossama'},
+  439:{a:'Othaim',c:'17598308',n:'439-OTH Hafr Batin',ci:'Hafer Al Batin',s:'Jamal'},
+  406:{a:'Othaim',c:'17585281',n:'406-OTH Omar Ibn Al-Khattab',ci:'Hail',s:'Sarsik'},
+  431:{a:'Othaim',c:'17585260',n:'431-OTH Omar Ibn Al-Khattab',ci:'Hail',s:'Sarsik'},
+  159:{a:'Danube',c:'10454363',n:'159-DA Onaiza Plaza',ci:'Onaiza',s:'Abdelwahed'},
+  165:{a:'Danube',c:'10454368',n:'165-Danube Hail',ci:'Hail',s:'Sarsik'},
+  178:{a:'Danube',c:'17618111',n:'178-Danube Nakhil Plaza',ci:'Buraida',s:'Abdelwahed'},
+  48:{a:'Farm',c:'10455025',n:'48-FARM KING KHALID ST',ci:'Arar',s:'Ossama'},
+  80:{a:'Farm',c:'10455050',n:'80-Farm King Abdulaziz ST',ci:'Sakaka',s:'Ossama'},
+  190:{a:'Tamimi',c:'10455120',n:'190-TAMIMI ONAIZA',ci:'Onaiza',s:'Abdelwahed'},
+  192:{a:'Tamimi',c:'10455121',n:'192-TAMIMI AL SULTANA',ci:'Buraida',s:'Abdelwahed'},
+  194:{a:'Tamimi',c:'10455122',n:'194-TAMIMI AL RAS',ci:'Al Rass',s:'Abdelwahed'},
+  195:{a:'Tamimi',c:'10455123',n:'195-TAMIMI HAFR AL BATIN',ci:'Hafer Al Batin',s:'Jamal'},
+};
+// Farm stores override (store 80 is Farm for FARM context, Othaim otherwise)
+const FARM_STORES={80:{a:'Farm',c:'10455050',n:'80-Farm King Abdulaziz ST',ci:'Sakaka',s:'Ossama'},48:{a:'Farm',c:'10455025',n:'48-FARM KING KHALID ST',ci:'Arar',s:'Ossama'}};
+
+function lk(n,isFarm){
+  const db=STORE||DB;
+  if(isFarm&&FARM_STORES[parseInt(n)])return mksi(FARM_STORES[parseInt(n)]);
+  const r=db[parseInt(n)];
+  return r?mksi(r):{account:'',code:'',name:'',city:'',salesman:''};
+}
+function mksi(r){return{account:r.a||r.account||'',code:r.c||r.code||'',name:r.n||r.name||'',city:r.ci||r.city||'',salesman:r.s||r.salesman||''};}
+
+// ─── UI ────────────────────────────────────────────────────────────
+const dz=$('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');addFiles([...e.dataTransfer.files])});
+$('pi').addEventListener('change',e=>addFiles([...e.target.files]));
+$('si').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{try{
+    const wb=XLSX.read(ev.target.result,{type:'array'});
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    STORE={};
+    rows.forEach(r=>{const sn=parseInt(r['Store#']||0);
+      if(sn)STORE[sn]={a:String(r['Account']||'').trim(),c:String(r['Customer Code']||'').trim(),
+        n:String(r['Customer_name2']||'').trim(),ci:String(r['City']||'').trim(),s:String(r['Salsman']||'').trim()};});
+    $('ss_').innerHTML=`<span>✓ ${Object.keys(STORE).length} متجر محمّل من ${f.name}</span>`;
+  }catch(e){$('ss_').textContent='خطأ في قراءة الملف';}};
+  rd.readAsArrayBuffer(f);
+});
+
+function addFiles(nf){
+  const v=nf.filter(f=>f.name.toLowerCase().endsWith('.pdf'));
+  if(!v.length)return;
+  FILES=[...FILES,...v];
+  $('fl').innerHTML=FILES.map((f,i)=>`
+    <div class="fi" id="fi${i}">
+      <div class="fic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <span class="fn">${f.name}</span>
+      <span class="fsz">${f.size>1e6?(f.size/1e6).toFixed(1)+'MB':(f.size/1024).toFixed(0)+'KB'}</span>
+      <span class="badge bw" id="b${i}">انتظار</span>
+    </div>`).join('');
+  ['cst','cpr','ab'].forEach(id=>$(id).classList.remove('hidden'));
+}
+function sb(i,c,t){const b=$('b'+i);if(b){b.className='badge '+c;b.textContent=t;}}
+function log(msg,cls=''){const lb=$('lb');lb.classList.remove('hidden');lb.innerHTML+=`<div class="${cls}">${msg}</div>`;lb.scrollTop=lb.scrollHeight;}
+
+// ─── PDF.js text extraction (digital PDFs) ─────────────────────────
+async function extractDigital(file){
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+  const allItems=[];
+  let pageOffset=0;
+  for(let p=1;p<=pdf.numPages;p++){
+    const page=await pdf.getPage(p);
+    const vp=page.getViewport({scale:1});
+    const tc=await page.getTextContent();
+    tc.items.forEach(it=>{
+      if(!it.str.trim())return;
+      const x=it.transform[4];
+      const y=vp.height-it.transform[5]+pageOffset;
+      allItems.push({x,y:Math.round(y*10)/10,str:it.str});
+    });
+    pageOffset+=vp.height+50;
+  }
+  // group into lines
+  allItems.sort((a,b)=>a.y-b.y||a.x-b.x);
+  const lines=[];
+  let curLine=null,curY=null;
+  for(const it of allItems){
+    if(curY===null||Math.abs(it.y-curY)>4){
+      curLine={y:it.y,items:[]};lines.push(curLine);curY=it.y;
+    }
+    curLine.items.push(it);
+  }
+  lines.forEach(l=>l.items.sort((a,b)=>a.x-b.x));
+  return lines;
+}
+
+// ─── OCR extraction (scanned PDFs) ─────────────────────────────────
+async function extractOCR(file){
+  log('  → PDF ممسوح ضوئياً — جاري تشغيل OCR...','lamb');
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+  let fullText='';
+  for(let p=1;p<=pdf.numPages;p++){
+    const page=await pdf.getPage(p);
+    const vp=page.getViewport({scale:2.5}); // high res for OCR
+    const canvas=document.createElement('canvas');
+    canvas.width=vp.width;canvas.height=vp.height;
+    const ctx=canvas.getContext('2d');
+    await page.render({canvasContext:ctx,viewport:vp}).promise;
+    // OCR with Tesseract
+    if(!OCR_WORKER){
+      log('  → تحميل محرك OCR...','lamb');
+      OCR_WORKER=await Tesseract.createWorker('eng',1,{logger:()=>{}});
+    }
+    const {data:{text}}=await OCR_WORKER.recognize(canvas);
+    fullText+=text+'\n';
+  }
+  // convert OCR text to lines format
+  const lines=fullText.split('\n').map((str,i)=>({y:i,items:[{x:0,str:str.trim()}]})).filter(l=>l.items[0].str);
+  return lines;
+}
+
+// ─── smart extract: try digital first, fallback to OCR ─────────────
+async function extractPDF(file){
+  const lines=await extractDigital(file);
+  const text=lines.map(l=>l.items.map(i=>i.str).join(' ')).join('\n');
+  // if too few chars → scanned
+  if(text.trim().length<100){
+    const ocrLines=await extractOCR(file);
+    return{lines:ocrLines,text:ocrLines.map(l=>l.items[0].str).join('\n'),ocr:true};
+  }
+  return{lines,text,ocr:false};
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────
+function fmtDate(r){
+  if(!r)return'';r=r.trim();
+  const monthMap={JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
+  // handle DD-MON-YYYY
+  const mname=r.match(/^(\d{2})-([A-Z]{3})-(\d{4})$/i);
+  if(mname)return`${mname[1]}/${monthMap[mname[2].toUpperCase()]||mname[2]}/${mname[3]}`;
+  const a=r.split(/[\/\.\-]/);
+  if(a.length===3){let[a1,a2,a3]=a;
+    if(a3.length===2)a3='20'+a3;
+    return parseInt(a1)>12?`${a1.padStart(2,'0')}/${a2.padStart(2,'0')}/${a3}`:`${a2.padStart(2,'0')}/${a1.padStart(2,'0')}/${a3}`;}
+  return r;
+}
+function zp(n){try{return String(parseInt(n)).padStart(6,'0');}catch{return String(n);}}
+function r2(n){return Math.round((n||0)*100)/100;}
+function mkhdr(snum,rtv,dt,po,ipr,isFarm){
+  const si=lk(snum,isFarm);
+  return{rtv_date:dt,rtv_number:rtv,po_number:po,internal_ref:ipr,
+    store_num:snum,store_name:si.name,city:si.city,account:si.account,customer_code:si.code,salesman:si.salesman};}
+
+// ─── PARSERS ───────────────────────────────────────────────────────
+function parseOthaim(lines,text){
+  const slip=text.match(/300257202200003\s+Packing slip\s+(\d+)/)||text.match(/Packing slip\s+(\d{5,})/);
+  const dt  =text.match(/Date\s+(\d{1,2}\/\d{1,2}\/\d{4})/);
+  const po  =text.match(/Purchase order\s+(\d+)/);
+  const ipr =text.match(/Internal product receipt\s+(\S+)/);
+  const wh  =text.match(/Warehouse\s*:\s*(\d+)/);
+  const h=mkhdr(wh?+wh[1]:null,slip?slip[1]:'',fmtDate(dt?dt[1]:''),po?po[1]:'',ipr?ipr[1]:'',false);
+  const rows=[];
+  lines.forEach(l=>{
+    const line=l.items.map(i=>i.str).join(' ');
+    const m=line.match(/^(\d{6})\s+(.+?)\s+([-\d.]+)\s+PCS\s+([\d.]+)\s+([-\d.]+)\s+([\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*$/);
+    if(m)rows.push({...h,item_number:zp(m[1]),description:m[2].trim(),qty:+m[3],unit:'PCS',unit_price:+m[4],price_ex_vat:+m[7],vat_amt:+m[8],total_incl_vat:+m[9]});
+  });
+  return rows;
+}
+
+function parseDanube(lines,text){
+  const ref=text.match(/Reference Number[.:\s]+(\d+)/);
+  const inv=text.match(/Invoice Number[.:\s]+(RTV\d+)/);
+  const shp=text.match(/Shipped on[.:\s]+(\S+)/);
+  const st =text.match(/Shipped From:\s*(\d+)/);
+  let rd=shp?shp[1]:'';
+  if(rd){const p=rd.split('/');if(p.length===3&&p[2].length===2)rd=`${p[0]}/${p[1]}/20${p[2]}`;}
+  const h=mkhdr(st?+st[1]:null,ref?ref[1]:'',fmtDate(rd),inv?inv[1]:'','',false);
+  const rows=[],seen=new Set();
+  lines.forEach(l=>{
+    const line=l.items.map(i=>i.str).join(' ');
+    const m=line.match(/^(\d{6,8})(?:\s+\d{6,8})?\s+(.+?)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*$/);
+    if(m&&!['310072','300257'].includes(m[1])){
+      const k=`${m[1]}-${m[3]}`;if(seen.has(k))return;seen.add(k);
+      const q=+m[3],ex=+m[4];
+      rows.push({...h,item_number:zp(m[1]),description:m[2].trim(),qty:q,unit:'EA',unit_price:q?r2(ex/q):0,price_ex_vat:ex,vat_amt:+m[5],total_incl_vat:+m[6]});}
+  });
+  return rows;
+}
+
+function parseTamimi(lines,text){
+  const gr =text.match(/(\d{10})\s+\d{2}\.\d{2}\.\d{4}/);
+  const ref=text.match(/(RS\d{14,})/);
+  const dt =text.match(/(\d{2}\.\d{2}\.\d{4})/);
+  const st =text.match(/\bS(\d{3})\b/);
+  const h=mkhdr(st?+st[1]:null,gr?gr[1]:'',dt?fmtDate(dt[1].replace(/\./g,'/')):'' ,ref?ref[1]:'','',false);
+  const rows=[],seen=new Set();
+  lines.forEach(l=>{
+    const line=l.items.map(i=>i.str).join(' ');
+    const m=line.match(/^(\d{6})\s+(.+?)\s+([\d.]+)\s+(EA|PAC|PC)\s+([\d.]+)\s+Per\s+(?:EA|PAC|PC)\s+([\d.]+)\s+(\d+)\s+%\s+([\d.]+)\s+\S+\s*$/);
+    if(m){const k=`${m[1]}-${m[6]}`;if(seen.has(k))return;seen.add(k);
+      const ex=+m[6],v=+m[8];
+      rows.push({...h,item_number:zp(m[1]),description:m[2].trim(),qty:+m[3],unit:m[4],unit_price:+m[5],price_ex_vat:ex,vat_amt:v,total_incl_vat:r2(ex+v)});}
+  });
+  return rows;
+}
+
+function parseFarm(lines,text){
+  const inv=text.match(/INVOICE\s*NO\.?\s*[:\s]+(\d+)/i);
+  const dt =text.match(/Date:\s*(\d{2}-[A-Za-z]+-\d{4})/i)||text.match(/(\d{2}-[A-Z]{3}-\d{4})/);
+  const br =text.match(/Branch:\s*FARM\s*(\d+)/i)||text.match(/FARM\s+(\d+)/i);
+  const h=mkhdr(br?+br[1]:null,inv?inv[1]:'',dt?fmtDate(dt[1]):'','','',true);
+  const rows=[];
+  lines.forEach(l=>{
+    const line=l.items.map(i=>i.str).join(' ');
+    // SN ItemCode Description UOM Pack Qty Cost Dis GrossAmt VatRate VatAmt NetAmt
+    const m=line.match(/^(\d+)\s+(\S+)\s+(.+?)\s+(OU\d|PC|EA)\s+(\d+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)%?\s+([\d.]+)\s+([\d.]+)\s*$/);
+    if(m)rows.push({...h,item_number:m[2],description:m[3].trim(),qty:+m[6],unit:m[4],unit_price:+m[7],price_ex_vat:+m[9],vat_amt:+m[11],total_incl_vat:+m[12]});
+  });
+  return rows;
+}
+
+function dispatch(lines,text){
+  const u=text.toUpperCase();
+  if(u.includes('PACKING SLIP'))      return parseOthaim(lines,text);
+  if(u.includes('PICKING SLIP'))      return parseTamimi(lines,text);
+  if(u.includes('RETURN ADVISE'))     return parseDanube(lines,text);
+  if(u.includes('RETURN/DEBIT')||(u.includes('FARM')&&(u.includes('SAMCO')||u.includes('INVOICE NO'))))return parseFarm(lines,text);
+  const tries=[parseOthaim,parseDanube,parseTamimi,parseFarm].map(fn=>fn(lines,text));
+  return tries.reduce((b,c)=>c.length>b.length?c:b,[]);
+}
+
+// ─── main ───────────────────────────────────────────────────────────
+async function run(){
+  if(!FILES.length)return;
+  const btn=$('rb_');
+  btn.disabled=true;
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite;flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56" stroke="white" fill="none" stroke-width="2.5"/></svg> جاري المعالجة...';
+  const allRows=[],stats=[];
+  for(let i=0;i<FILES.length;i++){
+    sb(i,'bp','قراءة...');
+    const pct=Math.round(i/FILES.length*100);
+    $('pf_').style.width=pct+'%';$('pp').textContent=pct+'%';
+    $('pl').textContent=`${i+1}/${FILES.length} — ${FILES[i].name.slice(0,40)}`;
+    await new Promise(r=>setTimeout(r,20));
+    try{
+      log(`▶ ${FILES[i].name}`,'lin');
+      const {lines,text,ocr}=await extractPDF(FILES[i]);
+      log(`  ${ocr?'OCR':'digital'} | chars:${text.length} lines:${lines.length}`);
+      if(ocr)sb(i,'bocr','OCR...');
+      const rows=dispatch(lines,text);
+      log(`  items:${rows.length}`,rows.length?'lok':'ler');
+      if(rows.length){
+        allRows.push(...rows);
+        const r0=rows[0];
+        stats.push({fname:FILES[i].name,rtv:r0.rtv_number,dt:r0.rtv_date,store:r0.store_num,acct:r0.account,sname:r0.store_name,n:rows.length,ex:rows.reduce((s,r)=>s+r.price_ex_vat,0),vat:rows.reduce((s,r)=>s+r.vat_amt,0),tot:rows.reduce((s,r)=>s+r.total_incl_vat,0)});
+        sb(i,'bok',rows.length+' صنف');
+        log(`  ✓ Store:${r0.store_num}|${r0.account}|RTV:${r0.rtv_number}`,'lok');
+      }else{
+        stats.push({fname:FILES[i].name,rtv:'',dt:'',store:null,acct:'',sname:'',n:0,ex:0,vat:0,tot:0});
+        sb(i,'ber','0 صنف');
+        log(`  ✗ لم يستخرج أصناف`,'ler');
+      }
+    }catch(e){sb(i,'ber','خطأ');log(`  ✗ ${e.message}`,'ler');}
+  }
+  $('pf_').style.width='100%';$('pp').textContent='100%';$('pl').textContent='اكتمل ✓';
+  const url=buildXLSX(allRows,stats);
+  const accts=new Set(stats.map(s=>s.acct).filter(Boolean));
+  $('sd').textContent=stats.length;$('si_').textContent=allRows.length;$('sa').textContent=accts.size;
+  $('rd_').textContent=`${allRows.length} سطر منتج من ${stats.length} وثيقة`;
+  $('dl').href=url;$('dl').download=`RTV_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
+  $('ab').classList.add('hidden');$('cr').classList.remove('hidden');
+  $('cr').scrollIntoView({behavior:'smooth'});
+}
+
+// ─── Excel ──────────────────────────────────────────────────────────
+function buildXLSX(rows,stats){
+  const wb=XLSX.utils.book_new();
+  const DH=['RTV Date','RTV / Ref #','PO Number','Internal Ref','Store #','Store Name','City','Account','Customer Code','Salesman','Item Number','Description','Qty','Unit','Unit Price (SAR)','Price Excl. VAT','VAT Amount (15%)','Total incl. VAT'];
+  const DK=['rtv_date','rtv_number','po_number','internal_ref','store_num','store_name','city','account','customer_code','salesman','item_number','description','qty','unit','unit_price','price_ex_vat','vat_amt','total_incl_vat'];
+  const dData=[DH];
+  rows.forEach(r=>dData.push(DK.map(k=>r[k]??'')));
+  const wsD=XLSX.utils.aoa_to_sheet(dData);
+  wsD['!cols']=[12,14,14,18,8,36,14,10,14,12,12,40,7,6,12,13,10,14].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,wsD,'RTV Line Details');
+  const SH=['RTV Date','RTV / Ref #','Store #','Store Name','City','Account','Customer Code','Salesman','# Items','Excl. VAT (SAR)','VAT (SAR)','Total incl. VAT (SAR)'];
+  const sData=[SH];
+  stats.forEach(s=>{const si=lk(s.store);sData.push([s.dt,s.rtv,s.store,s.sname||si.name,si.city,s.acct,si.code,si.salesman,s.n,r2(s.ex),r2(s.vat),r2(s.tot)]);});
+  sData.push([],[' TOTALS BY ACCOUNT']);
+  sData.push(['Account','Documents','Items','Excl. VAT','VAT','Total']);
+  const ac={};
+  stats.forEach(s=>{const a=s.acct||'Unknown';if(!ac[a])ac[a]={d:0,i:0,e:0,v:0,t:0};ac[a].d++;ac[a].i+=s.n;ac[a].e+=s.ex;ac[a].v+=s.vat;ac[a].t+=s.tot;});
+  Object.entries(ac).sort().forEach(([a,d])=>sData.push([a,d.d,d.i,r2(d.e),r2(d.v),r2(d.t)]));
+  sData.push(['GRAND TOTAL','','',r2(Object.values(ac).reduce((s,d)=>s+d.e,0)),r2(Object.values(ac).reduce((s,d)=>s+d.v,0)),r2(Object.values(ac).reduce((s,d)=>s+d.t,0))]);
+  const wsS=XLSX.utils.aoa_to_sheet(sData);
+  wsS['!cols']=[12,14,8,36,14,10,14,12,8,14,12,18].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,wsS,'Summary');
+  const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  return URL.createObjectURL(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+}
+
+function reset_(){
+  FILES=[];STORE=null;
+  $('fl').innerHTML='';$('lb').innerHTML='';
+  ['cst','cpr','ab','cr'].forEach(id=>$(id).classList.add('hidden'));
+  $('lb').classList.add('hidden');
+  const btn=$('rb_');btn.disabled=false;
+  btn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="white" fill="none" stroke-width="2"/></svg> تحويل إلى Excel';
+  $('pf_').style.width='0%';$('pp').textContent='0%';$('pl').textContent='جاهز';
+  $('pi').value='';$('si').value='';
+  $('ss_').innerHTML='لم يُرفع ملف — <span>سيُستخدم القاموس المدمج (78 متجر)</span>';
+}
+</script>
+
+
+</body></html>
