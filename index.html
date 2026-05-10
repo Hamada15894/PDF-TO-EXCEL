@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RTV Excel Converter</title>
+<title>RTV Excel Converter — Mars Wrigley</title>
+<link rel="icon" href="https://www.mars.com/favicon.ico">
+<style>
+/* Article icon link */
+.mars-icon-link{display:inline-block;text-decoration:none;transition:opacity .2s transform .2s;line-height:0}
+.mars-icon-link:hover{opacity:.85;transform:scale(1.04)}
+.mars-icon-link img{height:36px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+</style>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 :root{--bg:#0f1117;--sf:#181c26;--sf2:#1e2330;--bd:#2a3045;--bd2:#3a4460;--ac:#3b82f6;--ac2:#60a5fa;--gn:#22c55e;--gnb:#052e16;--rd:#ef4444;--am:#f59e0b;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;--mn:'IBM Plex Mono',monospace;--sn:'IBM Plex Sans Arabic',sans-serif;--r:10px;--r2:6px}
@@ -84,7 +91,7 @@ input[type=file]{display:none}
 <body>
 <div class="glow"></div>
 <div class="wrap">
- 
+
 <header>
   <div class="lm">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:1.5"/><line x1="16" y1="13" x2="8" y2="13" style="stroke:white;stroke-width:1.5"/><line x1="16" y1="17" x2="8" y2="17" style="stroke:white;stroke-width:1.5"/></svg>
@@ -94,8 +101,9 @@ input[type=file]{display:none}
     <p>تحويل مرتجعات PDF إلى Excel — رقمية أو ممسوحة ضوئياً</p>
   </div>
   <div class="bv">v6.0</div>
+  <img src="https://theedgemalaysia.com/_next/image?url=https%3A%2F%2Fassets.theedgemarkets.com%2FMARS.jpg&w=1920&q=75" alt="Mars Snacking" style="height:36px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))">
 </header>
- 
+
 <div class="card" id="cu">
   <div class="clabel">01 — رفع ملفات PDF</div>
   <div class="dz" id="dz" onclick="document.getElementById('pi').click()">
@@ -111,7 +119,7 @@ input[type=file]{display:none}
   <input type="file" id="pi" multiple accept=".pdf">
   <div class="fl" id="fl"></div>
 </div>
- 
+
 <div class="card hidden" id="cst">
   <div class="clabel">02 — ربط بيانات المتاجر (اختياري)</div>
   <div class="sm" onclick="document.getElementById('si').click()">
@@ -121,7 +129,7 @@ input[type=file]{display:none}
   </div>
   <input type="file" id="si" accept=".xlsx,.xls">
 </div>
- 
+
 <div class="card hidden" id="cpr">
   <div class="clabel">03 — المعالجة</div>
   <div class="pw">
@@ -131,14 +139,14 @@ input[type=file]{display:none}
   <div class="fl" id="pfl"></div>
   <div class="logb hidden" id="lb"></div>
 </div>
- 
+
 <div class="hidden" id="ab">
   <button class="btn-run" id="rb_" onclick="run()">
     <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
     تحويل إلى Excel
   </button>
 </div>
- 
+
 <div class="hidden" id="cr">
   <div class="rb">
     <div class="rc"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -157,20 +165,20 @@ input[type=file]{display:none}
   </div>
   <button class="btn-reset" onclick="reset_()">↺ معالجة ملفات جديدة</button>
 </div>
- 
+
 </div>
- 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
- 
+
 <script>
 'use strict';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
- 
+
 const $=id=>document.getElementById(id);
 let FILES=[],STORE=null,OCR_WORKER=null;
- 
+
 // ══════════════════════════════════════════════════════
 // STORE DATABASE
 // ══════════════════════════════════════════════════════
@@ -238,7 +246,7 @@ const DB={
 };
 // Farm store 80 (separate from Othaim 80)
 const FARM80={a:'Farm',c:'10455050',n:'80-Farm King Abdulaziz ST',ci:'Sakaka',s:'Ossama'};
- 
+
 function lk(n, isFarm){
   const db=STORE||DB;
   if(isFarm && parseInt(n)===80) return mksi(FARM80);
@@ -246,7 +254,7 @@ function lk(n, isFarm){
   return r?mksi(r):{account:'',code:'',name:'',city:'',salesman:''};
 }
 function mksi(r){return{account:r.a||r.account||'',code:r.c||r.code||'',name:r.n||r.name||'',city:r.ci||r.city||'',salesman:r.s||r.salesman||''};}
- 
+
 // ══════════════════════════════════════════════════════
 // UI EVENTS
 // ══════════════════════════════════════════════════════
@@ -271,7 +279,7 @@ $('si').addEventListener('change',e=>{
   }catch(err){$('ss_').textContent='خطأ في قراءة الملف';}};
   rd.readAsArrayBuffer(f);
 });
- 
+
 function addFiles(nf){
   const v=nf.filter(f=>f.name.toLowerCase().endsWith('.pdf'));
   if(!v.length){alert('يرجى رفع ملفات PDF فقط');return;}
@@ -285,10 +293,10 @@ function addFiles(nf){
     </div>`).join('');
   ['cst','cpr','ab'].forEach(id=>$(id).classList.remove('hidden'));
 }
- 
+
 function sb(i,c,t){const b=$('b'+i);if(b){b.className='badge '+c;b.textContent=t;}}
 function lg(msg,cls=''){const lb=$('lb');lb.classList.remove('hidden');lb.innerHTML+=`<div class="${cls||''}">${msg}</div>`;lb.scrollTop=lb.scrollHeight;}
- 
+
 // ══════════════════════════════════════════════════════
 // PDF EXTRACTION — DIGITAL
 // ══════════════════════════════════════════════════════
@@ -319,7 +327,7 @@ async function extractDigital(file){
   lines.forEach(l=>l.items.sort((a,b)=>a.x-b.x));
   return lines;
 }
- 
+
 // ══════════════════════════════════════════════════════
 // OCR EXTRACTION — SCANNED
 // ══════════════════════════════════════════════════════
@@ -346,7 +354,7 @@ async function extractOCR(file){
     .filter(l=>l.items[0].str.length>0);
   return{lines,text:fullText,ocr:true};
 }
- 
+
 async function extractPDF(file){
   const lines=await extractDigital(file);
   const text=lines.map(l=>l.items.map(i=>i.str).join(' ')).join('\n');
@@ -357,7 +365,7 @@ async function extractPDF(file){
   }
   return{lines,text,ocr:false};
 }
- 
+
 // ══════════════════════════════════════════════════════
 // HELPERS
 // ══════════════════════════════════════════════════════
@@ -381,11 +389,11 @@ function mkhdr(snum,rtv,dt,po,ipr,isFarm){
     store_num:snum,store_name:si.name,city:si.city,account:si.account,customer_code:si.code,salesman:si.salesman};
 }
 function lineText(l){return l.items.map(i=>i.str).join(' ');}
- 
+
 // ══════════════════════════════════════════════════════
 // PARSERS
 // ══════════════════════════════════════════════════════
- 
+
 // ── OTHAIM ──────────────────────────────────────────────
 function parseOthaim(lines,text){
   const slip=text.match(/300257202200003\s+Packing slip\s+(\d+)/)||text.match(/Packing slip\s+(\d{5,})/);
@@ -414,7 +422,7 @@ function parseOthaim(lines,text){
   });
   return rows;
 }
- 
+
 // ── DANUBE ──────────────────────────────────────────────
 function parseDanube(lines,text){
   const ref=text.match(/Reference Number[.:\s]+(\d+)/);
@@ -438,7 +446,7 @@ function parseDanube(lines,text){
   });
   return rows;
 }
- 
+
 // ── TAMIMI ──────────────────────────────────────────────
 function parseTamimi(lines,text){
   const gr =text.match(/(\d{10})\s+\d{2}\.\d{2}\.\d{4}/);
@@ -459,7 +467,7 @@ function parseTamimi(lines,text){
   });
   return rows;
 }
- 
+
 // ── FARM ────────────────────────────────────────────────
 function parseFarm(lines,text){
   const inv=text.match(/INVOICE\s*NO\.?\s*[:\s]+(\d+)/i);
@@ -486,7 +494,7 @@ function parseFarm(lines,text){
   });
   return rows;
 }
- 
+
 // ── OCR Farm (poor quality fallback) ────────────────────
 // إذا فشل الـ OCR لأي سبب، نستخدم البيانات المدخلة يدوياً من الـ PDF المعروف
 function parseFarmOCR(lines,text,fname){
@@ -521,7 +529,7 @@ function parseFarmOCR(lines,text,fname){
   });
   return rows;
 }
- 
+
 // ── DISPATCHER ──────────────────────────────────────────
 function dispatch(lines,text,fname,ocr){
   const u=text.toUpperCase();
@@ -535,7 +543,7 @@ function dispatch(lines,text,fname,ocr){
   const tries=[parseOthaim,parseDanube,parseTamimi,parseFarm].map(fn=>fn(lines,text));
   return tries.reduce((b,c)=>c.length>b.length?c:b,[]);
 }
- 
+
 // ══════════════════════════════════════════════════════
 // GRAND TOTAL VALIDATION
 // ══════════════════════════════════════════════════════
@@ -544,7 +552,7 @@ function extractOthaimPDFTotal(text){
   if(!m)return null;
   return{ex:Math.abs(parseFloat(m[3].replace(',',''))),vat:Math.abs(parseFloat(m[4].replace(',',''))),total:Math.abs(parseFloat(m[5].replace(',','')))};
 }
- 
+
 // ══════════════════════════════════════════════════════
 // MAIN RUN
 // ══════════════════════════════════════════════════════
@@ -553,7 +561,7 @@ async function run(){
   const btn=$('rb_');
   btn.disabled=true;
   btn.innerHTML='<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite;flex-shrink:0"><path d="M21 12a9 9 0 1 1-6.219-8.56" stroke="white" fill="none" stroke-width="2.5"/></svg> جاري المعالجة...';
- 
+
   const allRows=[],stats=[];
   for(let i=0;i<FILES.length;i++){
     sb(i,'bp','قراءة...');
@@ -566,10 +574,10 @@ async function run(){
       const {lines,text,ocr}=await extractPDF(FILES[i]);
       lg(`  ${ocr?'OCR':'digital'} | chars:${text.length} lines:${lines.length}`);
       if(ocr)sb(i,'bocr','OCR...');
- 
+
       const rows=dispatch(lines,text,FILES[i].name,ocr||false);
       lg(`  أصناف: ${rows.length}`,rows.length>0?'lok':'ler');
- 
+
       // validate totals for Othaim
       let totalNote='';
       if(rows.length>0&&text.toUpperCase().includes('PACKING SLIP')){
@@ -583,7 +591,7 @@ async function run(){
           lg(`  إجمالي: Calc=${calcEx} PDF=${pdfTot.ex} ${okEx?'✓':'✗'}`,okEx&&okTot?'lok':'ler');
         }
       }
- 
+
       if(rows.length>0){
         allRows.push(...rows);
         const r0=rows[0];
@@ -603,9 +611,9 @@ async function run(){
       lg(`  ✗ ${e.message}`,'ler');
     }
   }
- 
+
   $('pf_').style.width='100%';$('pp').textContent='100%';$('pl').textContent='اكتمل ✓';
- 
+
   const url=buildXLSX(allRows,stats);
   const accts=new Set(stats.map(s=>s.acct).filter(Boolean));
   $('sd').textContent=stats.length;
@@ -618,13 +626,13 @@ async function run(){
   $('cr').classList.remove('hidden');
   $('cr').scrollIntoView({behavior:'smooth'});
 }
- 
+
 // ══════════════════════════════════════════════════════
 // EXCEL BUILDER
 // ══════════════════════════════════════════════════════
 function buildXLSX(rows,stats){
   const wb=XLSX.utils.book_new();
- 
+
   // ── Sheet 1: Detail ──────────────────────────────────
   const DH=['RTV Date','RTV / Ref #','PO Number','Internal Ref',
             'Store #','Store Name','City','Account','Customer Code','Salesman',
@@ -636,37 +644,37 @@ function buildXLSX(rows,stats){
             'unit_price','price_ex_vat','vat_amt','total_incl_vat'];
   const dData=[DH];
   rows.forEach(r=>dData.push(DK.map(k=>r[k]??'')));
- 
+
   // Add grand total row
   const totEx =r2(rows.reduce((s,r)=>s+(r.price_ex_vat||0),0));
   const totVat=r2(rows.reduce((s,r)=>s+(r.vat_amt||0),0));
   const totTot=r2(rows.reduce((s,r)=>s+(r.total_incl_vat||0),0));
   dData.push([]);
   dData.push(['','','','','','','','','','','','GRAND TOTAL','','',' ',totEx,totVat,totTot]);
- 
+
   const wsD=XLSX.utils.aoa_to_sheet(dData);
   wsD['!cols']=[12,14,14,18,8,36,14,10,14,12,12,40,7,6,12,13,10,14].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb,wsD,'RTV Line Details');
- 
+
   // ── Sheet 2: Summary ─────────────────────────────────
   const SH=['RTV Date','RTV / Ref #','Store #','Store Name','City',
             'Account','Customer Code','Salesman',
             '# Items','Excl. VAT (SAR)','VAT (SAR)','Total incl. VAT (SAR)'];
   const sData=[SH];
- 
+
   stats.forEach(s=>{
     const si=lk(s.store);
     sData.push([s.dt,s.rtv,s.store,s.sname||si.name,si.city,s.acct,si.code,si.salesman,
       s.n,r2(s.ex),r2(s.vat),r2(s.tot)]);
   });
- 
+
   // Grand total row in summary
   sData.push([]);
   const sEx=r2(stats.reduce((x,s)=>x+s.ex,0));
   const sVat=r2(stats.reduce((x,s)=>x+s.vat,0));
   const sTot=r2(stats.reduce((x,s)=>x+s.tot,0));
   sData.push(['GRAND TOTAL','','','','','','','',stats.reduce((x,s)=>x+s.n,0),sEx,sVat,sTot]);
- 
+
   // By account
   sData.push([],['TOTALS BY ACCOUNT']);
   sData.push(['Account','Documents','Items','Excl. VAT','VAT','Total']);
@@ -676,15 +684,15 @@ function buildXLSX(rows,stats){
   Object.entries(ac).sort().forEach(([a,d])=>
     sData.push([a,d.d,d.i,r2(d.e),r2(d.v),r2(d.t)]));
   sData.push(['TOTAL ALL','',stats.reduce((x,s)=>x+s.n,0),sEx,sVat,sTot]);
- 
+
   const wsS=XLSX.utils.aoa_to_sheet(sData);
   wsS['!cols']=[12,14,8,36,14,10,14,12,8,14,12,18].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb,wsS,'Summary');
- 
+
   const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
   return URL.createObjectURL(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
 }
- 
+
 // ══════════════════════════════════════════════════════
 // RESET
 // ══════════════════════════════════════════════════════
@@ -702,4 +710,3 @@ function reset_(){
 </script>
 </body>
 </html>
- 
