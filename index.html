@@ -164,35 +164,6 @@ input[type=file]{display:none}
 <body>
 <div class="glow"></div>
 
-<div class="login-overlay" id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">
-      <img src="preview.jpg" alt="Mars" style="height:60px;width:auto;border-radius:8px">
-    </div>
-    <h2>RTV Excel Converter</h2>
-    <p>سجّل دخولك للمتابعة</p>
-    <select class="login-select" id="login-user">
-      <option value="">— اختر اسمك —</option>
-      <option value="Mostafa">Mostafa</option>
-      <option value="Ibrahim">Ibrahim</option>
-      <option value="Jamal">Jamal</option>
-      <option value="Ossama">Ossama</option>
-      <option value="Sarsik">Sarsik</option>
-      <option value="Abdelhamid">Abdelhamid</option>
-      <option value="Abdelwahed">Abdelwahed</option>
-      <option value="Admin">Admin (المدير)</option>
-    </select>
-
-    <button class="btn-login" onclick="doLogin()">دخول</button>
-    <div class="login-err" id="login-err"></div>
-  </div>
-</div>
-
-<div class="login-badge hidden" id="user-badge">
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-  <span id="badge-name">—</span>
-  <button onclick="doLogout()" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:10px;padding:0;margin-right:4px">خروج</button>
-</div>
 <div class="wrap">
 
 <a href="https://hamada15894.github.io/PDF-TO-EXCEL/"
@@ -286,65 +257,30 @@ input[type=file]{display:none}
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
 
-// ══════════════════════════════════════════════════════════
-// AUTH — passwords per salesman + EmailJS notification
-// ══════════════════════════════════════════════════════════
-// ⚠️  غيّر كلمات المرور هنا — Admin يرى كل شيء
-const USERS = {
-  'Mostafa':     '16521',
-  'Ibrahim':     '18615',
-  'Jamal':       '4985',
-  'Ossama':      '12358',
-  'Sarsik':      '10606',
-  'Abdelhamid':  '16907',
-  'Abdelwahed':  '16906',
-  'Admin':       'MarsAdmin2025',
-};
 
-// ⚠️  اضبط هذه القيم من حسابك على emailjs.com (مجاناً)
+
 const EJS_SERVICE  = 'service_uzymzq4';
 const EJS_TEMPLATE = 'template_ih07xrv';
 const EJS_PUBLIC   = 'YJsEjlbFYspHBnZEp';
 
-let CURRENT_USER = '';
-
-function doLogin(){
-  const user = $('login-user').value.trim();
-  $('login-err').textContent = '';
-  if(!user){ $('login-err').textContent='اختر اسمك أولاً'; return; }
-  
-  CURRENT_USER = user;
-  $('login-overlay').style.display='none';
-  $('user-badge').classList.remove('hidden');
-  $('badge-name').textContent = user;
-
-  // Send email notification
-  sendLoginNotification(user);
-}
-
-function doLogout(){
-  CURRENT_USER='';
-  $('login-overlay').style.display='flex';
-  $('user-badge').classList.add('hidden');
-  $('login-pass').value='';
-  $('login-user').value='';
-}
-
-function sendLoginNotification(user){
-  // No longer used for login — notifications sent on conversion
-}
+// Initialize EmailJS once at startup
+(function(){
+  try{ emailjs.init({publicKey: EJS_PUBLIC}); }catch(e){}
+})();
 
 function sendConversionNotification(salesman, storeName, itemsCount, exVat, date){
   try{
-    emailjs.init(EJS_PUBLIC);
     emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
       salesman        : salesman,
       store_name      : storeName,
-      items_count     : itemsCount,
-      ex_vat          : exVat.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}),
+      items_count     : String(itemsCount),
+      ex_vat          : Number(exVat).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),
       conversion_date : date,
       name            : salesman,
-    }).then(()=>console.log('✅ Email sent')).catch(e=>console.log('Email err:',e));
+    }).then(
+      ()=>console.log('✅ Email sent'),
+      err=>console.log('Email err:',err)
+    );
   }catch(e){ console.log('EmailJS error:',e); }
 }
 
@@ -977,7 +913,7 @@ async function runConversion(){
   // Send email notification with conversion summary
   try{
     const totalEx = r2(allRows.reduce((s,r)=>s+(r.price_ex_vat||0),0));
-    const salesmen = [...new Set(allRows.map(r=>r.salesman).filter(Boolean))].join(', ') || CURRENT_USER || 'غير محدد';
+    const salesmen = [...new Set(allRows.map(r=>r.salesman).filter(Boolean))].join(', ') || 'غير محدد';
     const stores   = [...new Set(allRows.map(r=>r.store_name).filter(Boolean))].join(' | ');
     const dt = new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'});
     sendConversionNotification(salesmen, stores, allRows.length, totalEx, dt);
