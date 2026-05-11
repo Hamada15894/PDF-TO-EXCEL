@@ -596,77 +596,47 @@ function parseOthaimByPosition(words, text){
 
 function parseDanubeByPosition(words, text){
   // ── Header ──────────────────────────────────────────────
-  const ref =text.match(/Reference Number[.:\s]+(\d+)/)||text.match(/Reference\s+Number\.+:\s*(\d+)/);
-  const inv =text.match(/Invoice Number[.:\s]+(RTV\d+)/)||text.match(/Invoice\s+Number\.+:\s*(RTV\d+)/);
-  const shp =text.match(/Shipped on[.:\s]+(\S+)/)||text.match(/Shipped\s+on\.+:\s*(\S+)/);
-  const st  =text.match(/Shipped From:\s*(\d+)/)||text.match(/Shipped\s+From:\s+(\d+)/);
-  // also try: store from filename or "00NNN" pattern
-  let rd=shp?shp[1]:'';
-  if(rd){const p=rd.split('/');if(p.length===3&&p[2].length===2)rd=`${p[0]}/${p[1]}/20${p[2]}`;}
-  const h=mkhdr(st?+st[1]:null,
+  const ref =text.match(/Reference Number[.:\s]+(\d+)/);
+  const inv =text.match(/Invoice Number[.:\s]+(RTV\d+)/);
+  const shp =text.match(/Shipped on[.:\s]+([\d\/]+)/);
+  const st  =text.match(/Shipped From:\s*(\d+)/);
+  let rd=shp?shp[1].trim():'';
+  if(rd){
+    // handle D/MM/YY or DD/MM/YY → DD/MM/YYYY
+    const p=rd.split('/');
+    if(p.length===3){
+      if(p[2].length===2)p[2]='20'+p[2];
+      rd=`${p[0].padStart(2,'0')}/${p[1].padStart(2,'0')}/${p[2]}`;
+    }
+  }
+  const h=mkhdr(
+    st?+st[1]:null,
     ref?ref[1]:(inv?inv[1]:''),
-    fmtDate(rd),
+    rd,
     inv?inv[1]:'',
     '',false);
 
-  // ── Auto-detect column X positions ──────────────────────
-  // Strategy: find first valid data row (item code + 4 numbers to the right)
-  // and calibrate from there
-  const SKIP=['310072','300257']; // Only VAT registration numbers
-  const byY={};
-  words.forEach(w=>{const k=Math.round(w.y/4)*4;if(!byY[k])byY[k]=[];byY[k].push(w);});
-
-  // Detect columns from first clean data row
-  let autoQtyX=null,autoExX=null,autoVatX=null,autoTotX=null;
-  for(const rw of Object.values(byY)){
-    const iw=rw.find(w=>/^\d{4,8}$/.test(w.s)&&w.x<55&&!SKIP.includes(w.s));
-    if(!iw)continue;
-    const nums=rw.filter(w=>/^[\d.]+$/.test(w.s)&&w.x>280).sort((a,b)=>a.x-b.x);
-    if(nums.length>=4){
-      autoQtyX  ={min:nums[0].x-22,max:nums[0].x+22};
-      autoExX   ={min:nums[1].x-22,max:nums[1].x+22};
-      autoVatX  ={min:nums[2].x-22,max:nums[2].x+22};
-      autoTotX  ={min:nums[3].x-22,max:nums[3].x+22};
-      break;
-    }
-  }
-  // Fallback to known positions if auto-detect fails
-  const QX =autoQtyX ||{min:285,max:330};
-  const EX =autoExX  ||{min:368,max:415};
-  const VX =autoVatX ||{min:448,max:495};
-  const TX =autoTotX ||{min:528,max:575};
-
-  // ── Extract rows ─────────────────────────────────────────
+  // ── TEXT-BASED item extraction (works on ALL Danube branches) ──
+  // Pattern: SKU [VendorPart] Description Qty ExVAT VAT Total
+  const ITEM_RE=/^(\d{4,8})\s+(?:\d{4,8}\s+)?(.+?)\s+([\d]+\.[\d]+)\s+([\d]+\.[\d]+)\s+(\.?[\d]+\.[\d]+)\s+([\d]+\.[\d]+)\s*$/;
+  const SKIP=new Set(['310072','300257','337618','337619']);
+  
   const rows=[],seen=new Set();
-  Object.values(byY).forEach(rw=>{
-    const iw=rw.find(w=>/^\d{4,8}$/.test(w.s)&&w.x<55&&!SKIP.includes(w.s));
-    if(!iw)return;
-
-    const num=(xr)=>{
-      const ws=rw.filter(w=>w.x>=xr.min&&w.x<=xr.max&&/^[\d.]+$/.test(w.s));
-      return ws.length?parseFloat(ws[ws.length-1].s):null;
-    };
-
-    // description: words between x=130 and QX.min, excluding pure-digit vendor codes
-    const desc=rw.filter(w=>w.x>=130&&w.x<QX.min&&!/^\d{5,}$/.test(w.s))
-                 .sort((a,b)=>a.x-b.x).map(w=>w.s).join(' ').trim();
-
-    const qty  =num(QX);
-    const exVat=num(EX);
-    const vat  =num(VX);
-    const total=num(TX);
-
-    if(qty===null||exVat===null)return;
-    const k=`${iw.s}-${r2(exVat)}-${r2(qty)}`;if(seen.has(k))return;seen.add(k);
-
+  text.split('\n').forEach(line=>{
+    const m=line.trim().match(ITEM_RE);
+    if(!m||SKIP.has(m[1]))return;
+    const k=`${m[1]}-${m[4]}-${m[3]}`;
+    if(seen.has(k))return;seen.add(k);
+    const qty=+m[3],ex=+m[4],vat=parseFloat(m[5]),tot=+m[6];
     rows.push({...h,
-      item_number:iw.s.length<6?iw.s.padStart(6,'0'):iw.s,
-      description:desc,
-      qty:r2(qty),unit:'EA',
-      unit_price:qty?r2(exVat/qty):0,
-      price_ex_vat:r2(exVat),
-      vat_amt:r2(vat||0),
-      total_incl_vat:r2(total||0)
+      item_number:m[1],
+      description:m[2].trim(),
+      qty:r2(qty),
+      unit:'EA',
+      unit_price:qty?r2(ex/qty):0,
+      price_ex_vat:r2(ex),
+      vat_amt:r2(vat),
+      total_incl_vat:r2(tot)
     });
   });
   return rows;
@@ -715,9 +685,14 @@ async function processPDF(file){
   const words=await getPDFWords(file);
   const lines=groupIntoLines(words);
   const text=allText(lines);
-  const isScanned=text.trim().length<100;
+  const isScanned=text.trim().length<30;
+  // If we can identify the type from minimal text, never OCR
+  const uQuick=text.toUpperCase();
+  const knownDigital=uQuick.includes('PACKING SLIP')||uQuick.includes('PICKING SLIP')||
+    uQuick.includes('RETURN ADVISE')||uQuick.includes('ITJDAJOB')||
+    uQuick.includes('DANUBE')||uQuick.includes('RTV842');
 
-  if(isScanned){
+  if(isScanned&&!knownDigital){
     // OCR path
     lg('  → ممسوح ضوئياً — OCR...','lam');
     if(!OCR_WORKER){
@@ -743,12 +718,13 @@ async function processPDF(file){
   }
 
   // Digital path — use position-based parsers for Othaim & Danube
-  const u=text.toUpperCase();
+  // Use longer text if needed for dispatch
+  const u=(text||'').toUpperCase();
   if(u.includes('PACKING SLIP')) return{rows:parseOthaimByPosition(words,text),text,ocr:false};
   if(u.includes('PICKING SLIP')) return{rows:parseTamimi(lines,text),text,ocr:false};
   // Danube: multiple keywords across different branches
   if(u.includes('RETURN ADVISE')||u.includes('DANUBE')||u.includes('ITJDAJOB')||
-     (u.includes('SHIPPED FROM')&&u.includes('SHIPPED TO')))
+     u.includes('RTV842')||(u.includes('SHIPPED FROM')&&u.includes('SHIPPED TO')))
     return{rows:parseDanubeByPosition(words,text),text,ocr:false};
   if(u.includes('RETURN/DEBIT')||(u.includes('FARM')&&u.includes('INVOICE NO')))
     return{rows:parseFarm(lines,text),text,ocr:false};
@@ -880,10 +856,17 @@ async function runConversion(){
   }
 
   // validation summary
-  const failedVal=validations.filter(v=>!v.qtyOk||!v.exOk||!v.totOk);
-  $('val-summary').innerHTML=failedVal.length===0
+  const failedVal=(typeof validations!=='undefined'?validations:[]).filter(v=>!v.qtyOk||!v.exOk||!v.totOk);
+  $('vs').innerHTML=failedVal.length===0
     ?'<span class="val-ok">✅ جميع الإجماليات مطابقة 100%</span>'
     :`<span class="val-err">⚠️ ${failedVal.length} وثيقة بها فرق — راجع الـ Log</span>`;
+
+  try{
+    const failedV=(typeof validations!=='undefined'?validations:[]).filter(v=>!v.qtyOk||!v.exOk||!v.totOk);
+    if($('vs')) $('vs').innerHTML=failedV.length===0
+      ?'<span style="color:var(--gn)">✅ جميع الإجماليات مطابقة 100%</span>'
+      :`<span style="color:var(--rd)">⚠️ ${failedV.length} وثيقة بها فرق</span>`;
+  }catch(e){}
 
   $('dl').href=url;
   $('dl').download=`RTV_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
