@@ -172,6 +172,29 @@ input[type=file]{display:none}
   <img src="preview.jpg" alt="Mars Incorporated" style="width:100%;height:auto;display:block">
 </a>
 
+<div class="card" id="settings-card">
+  <div class="clabel">⚙ الإعدادات — تخصيص الأعمدة وترتيبها</div>
+  <div class="stog" onclick="toggleSettings()">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    <span>ترتيب أعمدة Excel · إخفاء/إظهار · أعمدة إضافية من STORE_DATA</span>
+    <svg id="chev" viewBox="0 0 24 24" style="margin-right:auto;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="spanel" id="spanel">
+    <div class="spsec">
+      <div class="sptitle">ترتيب الأعمدة · اسحب للترتيب · أزل ✓ لإخفاء</div>
+      <p style="font-size:10px;color:var(--tx3);margin-bottom:8px">الترتيب محفوظ لجميع الملفات في هذه الجلسة</p>
+      <div class="cgrid" id="cgrid"></div>
+      <button class="btn-rs" onclick="resetCols()">↺ إعادة الترتيب الافتراضي</button>
+    </div>
+    <div class="spsec" style="margin-bottom:0">
+      <div class="sptitle">أعمدة إضافية من ملف STORE_DATA</div>
+      <p style="font-size:10px;color:var(--tx3);margin-bottom:8px">أدخل اسم العمود كما هو في Excel → اسمه في التقرير</p>
+      <div class="ecgrid" id="ecgrid"></div>
+      <button class="btn-add" onclick="addEC()">+ إضافة عمود</button>
+    </div>
+  </div>
+</div>
+
 <div class="card" id="cu">
   <div class="clabel">01 — رفع ملفات PDF</div>
   <div class="dz" id="dz" onclick="document.getElementById('pi').click()">
@@ -192,24 +215,7 @@ input[type=file]{display:none}
     <span class="sc">ارفع STORE_DATA.xlsx ←</span>
   </div>
   <input type="file" id="si" accept=".xlsx,.xls">
-  <div class="stog" onclick="toggleSettings()">
-    <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    <span>تخصيص الأعمدة وترتيبها · إضافة أعمدة من STORE_DATA</span>
-    <svg id="chev" viewBox="0 0 24 24" style="margin-right:auto;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="spanel" id="spanel">
-    <div class="spsec">
-      <div class="sptitle">ترتيب الأعمدة · اسحب للترتيب · أزل ✓ لإخفاء</div>
-      <div class="cgrid" id="cgrid"></div>
-      <button class="btn-rs" onclick="resetCols()">↺ إعادة الترتيب الافتراضي</button>
-    </div>
-    <div class="spsec" style="margin-bottom:0">
-      <div class="sptitle">أعمدة إضافية من ملف STORE_DATA</div>
-      <p style="font-size:10px;color:var(--tx3);margin-bottom:8px">اسم العمود في Excel → الاسم في التقرير</p>
-      <div class="ecgrid" id="ecgrid"></div>
-      <button class="btn-add" onclick="addEC()">+ إضافة عمود</button>
-    </div>
-  </div>
+
 </div>
 
 <div class="card hidden" id="cpr">
@@ -995,12 +1001,4 @@ function reset_(){
   ['cst','cpr','ab','cr'].forEach(id=>$(id).classList.add('hidden'));
   $('lb').classList.add('hidden');
   const btn=$('rb_');btn.disabled=false;
-  btn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="white" fill="none" stroke-width="2"/></svg> تحويل إلى Excel';
-  $('pf_').style.width='0%';$('pp').textContent='0%';$('pl').textContent='جاهز';
-  $('pi').value='';$('si').value='';
-  $('ss_').innerHTML='لم يُرفع ملف — <span>القاموس المدمج (96 متجر)</span>';
-}
-
-</script>
-</body>
-</html>
+  btn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="white" fill="none" stroke-width="2"/></
