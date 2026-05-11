@@ -163,6 +163,36 @@ input[type=file]{display:none}
 </head>
 <body>
 <div class="glow"></div>
+
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="preview.jpg" alt="Mars" style="height:60px;width:auto;border-radius:8px">
+    </div>
+    <h2>RTV Excel Converter</h2>
+    <p>سجّل دخولك للمتابعة</p>
+    <select class="login-select" id="login-user">
+      <option value="">— اختر اسمك —</option>
+      <option value="Mostafa">Mostafa</option>
+      <option value="Ibrahim">Ibrahim</option>
+      <option value="Jamal">Jamal</option>
+      <option value="Ossama">Ossama</option>
+      <option value="Sarsik">Sarsik</option>
+      <option value="Abdelhamid">Abdelhamid</option>
+      <option value="Abdelwahed">Abdelwahed</option>
+      <option value="Admin">Admin (المدير)</option>
+    </select>
+
+    <button class="btn-login" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div class="login-badge hidden" id="user-badge">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+  <span id="badge-name">—</span>
+  <button onclick="doLogout()" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:10px;padding:0;margin-right:4px">خروج</button>
+</div>
 <div class="wrap">
 
 <a href="https://hamada15894.github.io/PDF-TO-EXCEL/"
@@ -195,7 +225,7 @@ input[type=file]{display:none}
   </div>
 </div>
 
-<div class="card" id="cu">
+<div class="card" id="cu" style="scroll-margin-top:20px">
   <div class="clabel">01 — رفع ملفات PDF</div>
   <div class="dz" id="dz" onclick="document.getElementById('pi').click()">
     <div class="di"><svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
@@ -250,10 +280,74 @@ input[type=file]{display:none}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
+
+// ══════════════════════════════════════════════════════════
+// AUTH — passwords per salesman + EmailJS notification
+// ══════════════════════════════════════════════════════════
+// ⚠️  غيّر كلمات المرور هنا — Admin يرى كل شيء
+const USERS = {
+  'Mostafa':     '16521',
+  'Ibrahim':     '18615',
+  'Jamal':       '4985',
+  'Ossama':      '12358',
+  'Sarsik':      '10606',
+  'Abdelhamid':  '16907',
+  'Abdelwahed':  '16906',
+  'Admin':       'MarsAdmin2025',
+};
+
+// ⚠️  اضبط هذه القيم من حسابك على emailjs.com (مجاناً)
+const EJS_SERVICE  = 'service_uzymzq4';
+const EJS_TEMPLATE = 'template_ih07xrv';
+const EJS_PUBLIC   = 'YJsEjlbFYspHBnZEp';
+
+let CURRENT_USER = '';
+
+function doLogin(){
+  const user = $('login-user').value.trim();
+  $('login-err').textContent = '';
+  if(!user){ $('login-err').textContent='اختر اسمك أولاً'; return; }
+  
+  CURRENT_USER = user;
+  $('login-overlay').style.display='none';
+  $('user-badge').classList.remove('hidden');
+  $('badge-name').textContent = user;
+
+  // Send email notification
+  sendLoginNotification(user);
+}
+
+function doLogout(){
+  CURRENT_USER='';
+  $('login-overlay').style.display='flex';
+  $('user-badge').classList.add('hidden');
+  $('login-pass').value='';
+  $('login-user').value='';
+}
+
+function sendLoginNotification(user){
+  // No longer used for login — notifications sent on conversion
+}
+
+function sendConversionNotification(salesman, storeName, itemsCount, exVat, date){
+  try{
+    emailjs.init(EJS_PUBLIC);
+    emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      salesman        : salesman,
+      store_name      : storeName,
+      items_count     : itemsCount,
+      ex_vat          : exVat.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}),
+      conversion_date : date,
+      name            : salesman,
+    }).then(()=>console.log('✅ Email sent')).catch(e=>console.log('Email err:',e));
+  }catch(e){ console.log('EmailJS error:',e); }
+}
+
 'use strict';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const $=id=>document.getElementById(id);
@@ -442,6 +536,12 @@ function mksi(r){
 // UI EVENTS
 // ══════════════════════════════════════════════════════════
 const dz=$('dz');
+// Prevent browser from opening PDF when dragged anywhere on page
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>{
+  e.preventDefault();
+  if(e.dataTransfer.files.length) addFiles([...e.dataTransfer.files]);
+});
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');addFiles([...e.dataTransfer.files])});
@@ -874,6 +974,15 @@ async function runConversion(){
       :`<span style="color:var(--rd)">⚠️ ${failedV.length} وثيقة بها فرق</span>`;
   }catch(e){}
 
+  // Send email notification with conversion summary
+  try{
+    const totalEx = r2(allRows.reduce((s,r)=>s+(r.price_ex_vat||0),0));
+    const salesmen = [...new Set(allRows.map(r=>r.salesman).filter(Boolean))].join(', ') || CURRENT_USER || 'غير محدد';
+    const stores   = [...new Set(allRows.map(r=>r.store_name).filter(Boolean))].join(' | ');
+    const dt = new Date().toLocaleString('ar-SA',{timeZone:'Asia/Riyadh'});
+    sendConversionNotification(salesmen, stores, allRows.length, totalEx, dt);
+  }catch(e){}
+
   $('dl').href=url;
   $('dl').download=`RTV_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
   $('ab').classList.add('hidden');
@@ -1001,4 +1110,12 @@ function reset_(){
   ['cst','cpr','ab','cr'].forEach(id=>$(id).classList.add('hidden'));
   $('lb').classList.add('hidden');
   const btn=$('rb_');btn.disabled=false;
-  btn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="white" fill="none" stroke-width="2"/></
+  btn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke="white" fill="none" stroke-width="2"/></svg> تحويل إلى Excel';
+  $('pf_').style.width='0%';$('pp').textContent='0%';$('pl').textContent='جاهز';
+  $('pi').value='';$('si').value='';
+  $('ss_').innerHTML='لم يُرفع ملف — <span>القاموس المدمج (96 متجر)</span>';
+}
+
+</script>
+</body>
+</html>
