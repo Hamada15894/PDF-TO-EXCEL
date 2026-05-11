@@ -618,7 +618,7 @@ function parseDanubeByPosition(words, text){
 
   // ── TEXT-BASED item extraction (works on ALL Danube branches) ──
   // Pattern: SKU [VendorPart] Description Qty ExVAT VAT Total
-  const ITEM_RE=/^(\d{4,8})\s+(?:\d{4,8}\s+)?(.+?)\s+([\d]+\.[\d]+)\s+([\d]+\.[\d]+)\s+(\.?[\d]+\.[\d]+)\s+([\d]+\.[\d]+)\s*$/;
+  const ITEM_RE=/^(\d{4,8})\s+(?:\d{4,8}\s+)?(.+?)\s+([\d]+\.[\d]+)\s+([\d]+\.[\d]+)\s+(\.?\d+\.?\d*)\s+([\d]+\.[\d]+)\s*$/;
   const SKIP=new Set(['310072','300257','337618','337619']);
   
   const rows=[],seen=new Set();
