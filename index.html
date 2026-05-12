@@ -198,6 +198,19 @@ input[type=file]{display:none}
   </div>
 </div>
 
+<!-- SKU UPDATE CARD -->
+<div class="card" id="sku-card">
+  <div class="clabel">📦 تحديث ملفات SKUs — لكل حساب</div>
+  <div id="sku-account-grid" style="display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:12px;color:var(--tx3);text-align:center;padding:10px">جاري التحميل...</div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button onclick="skuAddAccount()" style="padding:6px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r2);color:var(--gn);font-size:12px;cursor:pointer">+ إضافة حساب جديد</button>
+    <span style="font-size:10px;color:var(--tx3)">تنسيق Excel: Account / ZREP / Article No / Mars Description / Category / Brand</span>
+  </div>
+</div>
+<input type="file" id="sku-file-input" accept=".xlsx,.xls" style="display:none">
+
 <div class="card" id="cu" style="scroll-margin-top:20px">
   <div class="clabel">01 — رفع ملفات PDF</div>
   <div class="dz" id="dz" onclick="document.getElementById('pi').click()">
@@ -342,26 +355,110 @@ function buildSKUAccountGrid(){
   const grid = document.getElementById('sku-account-grid');
   if(!grid) return;
   const accounts = Object.keys(SKU_DB);
+  // Use label+input for reliable file picker (works in all browsers)
   grid.innerHTML = accounts.map(a => `
     <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r2)">
       <div style="flex-shrink:0;width:36px;height:36px;background:rgba(59,130,246,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">📦</div>
       <div style="flex:1">
         <div style="font-size:13px;font-weight:500;color:var(--tx)">${a}</div>
-        <div style="font-size:11px;color:var(--tx3);font-family:var(--mn)">${Object.keys(SKU_DB[a]).length} صنف مُحمَّل</div>
+        <div style="font-size:11px;color:var(--tx3);font-family:var(--mn)" id="sku-count-${a}">${Object.keys(SKU_DB[a]).length} صنف مُحمَّل</div>
       </div>
-      <button onclick="triggerSKUUpload('${a}')" 
+      <label for="sku-input-${a}"
         style="padding:7px 16px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:var(--r2);color:var(--ac2);font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s"
         onmouseover="this.style.background='rgba(59,130,246,.2)'"
         onmouseout="this.style.background='rgba(59,130,246,.1)'">
         📂 ${a} SKUs تحديث
-      </button>
+      </label>
+      <input type="file" id="sku-input-${a}" accept=".xlsx,.xls" style="display:none"
+        onchange="handleSKUUpload(this,'${a}')">
     </div>`).join('');
+}
+
+function handleSKUUpload(input, account){
+  const f = input.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = function(ev){
+    try{
+      const wb = XLSX.read(ev.target.result, {type:'array'});
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      const newData = {};
+      rows.forEach(r => {
+        const art  = r['Article No']  || r['article_no']  || r['ArticleNo'];
+        const zrep = r['ZREP']        || r['zrep'];
+        const desc = r[' Mars Description '] || r['Mars Description'] || r['Description'] || r['desc'];
+        const cat  = r['Category ']   || r['Category']    || r['cat'];
+        const brand= r['Brand ']      || r['Brand']       || r['brand'];
+        if(art){
+          newData[String(parseInt(art)||art)] = {
+            zrep : zrep  || '',
+            desc : String(desc||'').trim(),
+            cat  : String(cat||'').trim(),
+            brand: String(brand||'').trim(),
+          };
+        }
+      });
+      SKU_DB[account] = newData;
+      // Update count display
+      const countEl = document.getElementById('sku-count-'+account);
+      if(countEl) countEl.textContent = Object.keys(newData).length + ' صنف مُحمَّل';
+      // Show success
+      const grid = document.getElementById('sku-account-grid');
+      const msg = document.createElement('div');
+      msg.style.cssText='padding:10px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:6px;color:#22c55e;font-size:12px;margin-top:6px';
+      msg.textContent = '✅ تم تحديث ' + Object.keys(newData).length + ' صنف لحساب ' + account;
+      grid.appendChild(msg);
+      setTimeout(()=>msg.remove(), 4000);
+    }catch(err){ alert('خطأ في قراءة الملف: ' + err.message); }
+  };
+  rd.readAsArrayBuffer(f);
+  input.value = '';
 }
 
 function triggerSKUUpload(account){
   currentSKUAccount = account;
-  const inp = document.getElementById('sku-file-input') || document.getElementById('sku-upload-input');
-  if(inp) inp.click();
+  // Create a fresh file input each time to avoid browser caching issues
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.xlsx,.xls';
+  inp.onchange = function(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const rd = new FileReader();
+    rd.onload = function(ev){
+      try{
+        const wb = XLSX.read(ev.target.result, {type:'array'});
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        const newData = {};
+        rows.forEach(r => {
+          const art  = r['Article No']  || r['article_no']  || r['ArticleNo'];
+          const zrep = r['ZREP']        || r['zrep'];
+          const desc = r[' Mars Description '] || r['Mars Description'] || r['desc'] || r['Description'];
+          const cat  = r['Category ']   || r['Category']    || r['cat'];
+          const brand= r['Brand ']      || r['Brand']       || r['brand'];
+          if(art){
+            newData[String(parseInt(art)||art)] = {
+              zrep : zrep  || '',
+              desc : String(desc||'').trim(),
+              cat  : String(cat||'').trim(),
+              brand: String(brand||'').trim(),
+            };
+          }
+        });
+        SKU_DB[currentSKUAccount] = newData;
+        buildSKUAccountGrid();
+        // Show success message
+        const grid = document.getElementById('sku-account-grid');
+        const msg = document.createElement('div');
+        msg.style.cssText='padding:10px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:6px;color:#22c55e;font-size:12px;margin-top:4px';
+        msg.textContent = '✅ تم تحديث ' + Object.keys(newData).length + ' صنف لحساب ' + currentSKUAccount;
+        grid.appendChild(msg);
+        setTimeout(()=>msg.remove(), 4000);
+      }catch(err){ alert('خطأ: ' + err.message); }
+    };
+    rd.readAsArrayBuffer(f);
+  };
+  inp.click();
 }
 
 // SKU file upload handler
