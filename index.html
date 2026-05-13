@@ -216,10 +216,10 @@ input[type=file]{display:none}
   <div class="dz" id="dz" onclick="document.getElementById('pi').click()">
     <div class="di"><svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
     <h3>اسحب ملفات PDF وأفلتها هنا</h3>
-    <p>رقمية أو ممسوحة ضوئياً — دقة 100% في استخراج الأصناف</p>
-    <div class="tags"><span class="tag">العثيم</span><span class="tag">التميمي</span><span class="tag">الدانوب</span><span class="tag">فارم</span><span class="tag">حتى 100 ملف</span></div>
+    <p>رقمية أو ممسوحة ضوئياً أو ملفات SAMCO النصية — دقة 100%</p>
+    <div class="tags"><span class="tag">العثيم</span><span class="tag">التميمي</span><span class="tag">الدانوب</span><span class="tag">فارم</span><span class="tag">SAMCO</span><span class="tag">حتى 100 ملف</span></div>
   </div>
-  <input type="file" id="pi" multiple accept=".pdf">
+  <input type="file" id="pi" multiple accept=".pdf,.md,.txt,.html,.htm,*">
 <input type="file" id="sku-file-input" accept=".xlsx,.xls" style="display:none">
   <div class="fl" id="fl"></div>
 </div>
@@ -923,7 +923,7 @@ $('si').addEventListener('change',e=>{
 });
 
 function addFiles(nf){
-  const v=nf.filter(f=>f.name.toLowerCase().endsWith('.pdf'));
+  const v=nf.filter(f=>/\.(pdf|md|txt|html?)$/i.test(f.name)||!f.name.includes('.'));
   if(!v.length)return;
   FILES=[...FILES,...v];
   $('fl').innerHTML=FILES.map((f,i)=>`
@@ -1081,7 +1081,8 @@ function parseOthaimOCR(lines, text){
   ITEM_RE.lastIndex = 0;
   while((m = ITEM_RE.exec(uniqueLines)) !== null){
     // Dedup by item+qty to handle page repetitions
-    const key = m[1]+'-'+Math.abs(parseFloat(m[3])).toFixed(0);
+    // Use item+qty+exvat as key to allow same item with different prices
+    const key = m[1]+'-'+Math.abs(parseFloat(m[3])).toFixed(0)+'-'+Math.abs(parseFloat(m[5])).toFixed(2);
     if(seen.has(key)) continue;
     seen.add(key);
     rows.push({...h,
@@ -1167,6 +1168,70 @@ function parseTamimi(lines,text){
 }
 
 
+
+// ── SAMCO/FARM PDF PARSER — Position-based ─────────────────
+function parseSAMCOMarkdown(text, words){
+  const inv = text.match(/INVOICE NO\.\s*:\s*(\d+)/);
+  const dt  = text.match(/Date:\s*(\d{2}-[A-Za-z]+-\d{4})/);
+  const br  = text.match(/FARM\s+(\d+)/);
+  const h = mkhdr(br?+br[1]:null, inv?inv[1]:'', dt?fmtDate(dt[1]):'', '', '', true);
+
+  if(words && words.length > 0){
+    const ITEM_CODE = /^\d{8}-\d{4}$/;
+    const byY = {};
+    words.forEach(w=>{const k=Math.round(w.y/4)*4; if(!byY[k])byY[k]=[]; byY[k].push(w);});
+
+    const rows=[], seen=new Set();
+    Object.values(byY).forEach(rw=>{
+      const codeW = rw.find(w=>ITEM_CODE.test(w.str) && w.x>90 && w.x<130);
+      if(!codeW) return;
+
+      const num=(x1,x2)=>{
+        const ws=rw.filter(w=>w.x>=x1&&w.x<=x2&&/^[\d.]+$/.test(w.str));
+        return ws.length?parseFloat(ws[ws.length-1].str):null;
+      };
+      const desc=rw.filter(w=>w.x>130&&w.x<340&&!/^[\d.]+$/.test(w.str)&&w.str!=='PC'&&w.str!=='OU1'&&w.str!=='OU2')
+                   .sort((a,b)=>a.x-b.x).map(w=>w.str).join(' ').trim();
+      const uom = rw.find(w=>w.x>=340&&w.x<=370&&/^[A-Z]+\d*$/.test(w.str));
+
+      const qty   = num(420,450);
+      const cost  = num(460,490);
+      const gross = num(530,565);
+      const vat   = num(615,645);
+      const net   = num(672,705);
+
+      if(!qty||!gross) return;
+      const key=codeW.str+'-'+qty+'-'+gross;
+      if(seen.has(key)) return; seen.add(key);
+
+      rows.push({...h,
+        item_number   : codeW.str,
+        description   : desc,
+        qty           : qty,
+        unit          : uom?uom.str:'PC',
+        unit_price    : cost||0,
+        price_ex_vat  : gross,
+        vat_amt       : vat||0,
+        total_incl_vat: net||0,
+      });
+    });
+    if(rows.length>0) return rows;
+  }
+
+  // Fallback: text-based regex
+  const TABLE_RE = /\|(\d+)\|([\w.-]+[-\/][\w.-]+|\d{8,})\|(.+?)\|(\w+)\|(\d+)\|([\d.]+)\|([\d.]+)\|[\d.]+\|([\d.]+)\|\d+\s*%?\|([\d.]+)\|([\d.]+)\|/g;
+  const rows2=[], seen2=new Set();
+  let m;
+  while((m=TABLE_RE.exec(text))!==null){
+    const code=m[2],qty=+m[6],gross=+m[8],vat=+m[9],net=+m[10];
+    const key=code+'-'+qty+'-'+gross;
+    if(seen2.has(key))continue; seen2.add(key);
+    rows2.push({...h,item_number:code,description:m[3].replace(/~~|<br>|\*\*/g,'').trim(),
+      qty,unit:m[4],unit_price:+m[7],price_ex_vat:gross,vat_amt:vat,total_incl_vat:net});
+  }
+  return rows2;
+}
+
 function parseFarm(lines,text){
   const inv=text.match(/INVOICE\s*NO\.?\s*[:\s]+(\d+)/i);
   const dt =text.match(/Date:\s*(\d{2}-[A-Za-z]+-\d{4})/i)||text.match(/(\d{2}-[A-Z]{3}-\d{4})/);
@@ -1246,8 +1311,12 @@ async function processPDF(file){
   if(u.includes('RETURN ADVISE')||u.includes('DANUBE')||u.includes('ITJDAJOB')||
      u.includes('RTV842')||(u.includes('SHIPPED FROM')&&u.includes('SHIPPED TO')))
     return{rows:parseDanubeByPosition(words,text).map(enrichRow),text,ocr:false};
-  if(u.includes('RETURN/DEBIT')||(u.includes('FARM')&&u.includes('INVOICE NO')))
+  if(u.includes('RETURN/DEBIT')||(u.includes('FARM')&&u.includes('INVOICE NO'))){
+    // Use SAMCO parser for Farm/SAMCO invoices
+    const samcoRows = parseSAMCOMarkdown(text, words);
+    if(samcoRows.length>0) return{rows:samcoRows.map(enrichRow),text,ocr:false};
     return{rows:parseFarm(lines,text).map(enrichRow),text,ocr:false};
+  }
   // try all
   const attempts=[
     parseOthaimByPosition(words,text),
@@ -1280,10 +1349,11 @@ function validateOthaim(rows, text){
 }
 
 
+const MN={JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
 function fmtDate(r){
   if(!r)return'';r=r.trim();
   const mn=r.match(/^(\d{2})-([A-Za-z]{3})-(\d{4})$/);
-  if(mn)return`${mn[1]}/${MONTHS[mn[2].toUpperCase()]||mn[2]}/${mn[3]}`;
+  if(mn)return`${mn[1]}/${MN[mn[2].toUpperCase()]||mn[2]}/${mn[3]}`;
   const a=r.split(/[\/\.\-]/);
   if(a.length===3){let[a1,a2,a3]=a;if(a3.length===2)a3='20'+a3;
     return parseInt(a1)>12?`${a1.padStart(2,'0')}/${a2.padStart(2,'0')}/${a3}`:`${a2.padStart(2,'0')}/${a1.padStart(2,'0')}/${a3}`;}
@@ -1328,6 +1398,32 @@ async function runConversion(){
 
     try{
       lg(`▶ ${FILES[i].name}`,'lin');
+      // Handle markdown/text files (SAMCO format)
+      // Try text parsing for non-PDF files or files with SAMCO/FARM content
+      const isPDF = /\.pdf$/i.test(FILES[i].name);
+      if(!isPDF){
+        const mdText = await FILES[i].text();
+        const u = mdText.toUpperCase();
+        let rows = [];
+        if(u.includes('FARM')||u.includes('SAMCO')||u.includes('INVOICE NO')||u.includes('RETURN'))
+          rows = parseSAMCOMarkdown(mdText, null).map(enrichRow);
+        lg(`  Markdown | أصناف:${rows.length}`, rows.length>0?'lok':'ler');
+        if(rows.length>0){
+          allRows.push(...rows);
+          const r0=rows[0];
+          stats.push({fname:FILES[i].name,rtv:r0.rtv_number,dt:r0.rtv_date,
+            po:r0.po_number||'',store:r0.store_num,acct:r0.account,sname:r0.store_name,
+            n:rows.length,ex:r2(rows.reduce((s,r)=>s+r.price_ex_vat,0)),
+            vat:r2(rows.reduce((s,r)=>s+r.vat_amt,0)),
+            tot:r2(rows.reduce((s,r)=>s+r.total_incl_vat,0))});
+          sb(i,'bok',rows.length+' صنف');
+          lg(`  ✓ Store:${r0.store_num}|${r0.account}|Inv:${r0.rtv_number}`,'lok');
+        }else{
+          stats.push({fname:FILES[i].name,rtv:'',dt:'',po:'',store:null,acct:'',sname:'',n:0,ex:0,vat:0,tot:0});
+          sb(i,'ber','0 صنف');
+        }
+        continue; // Skip PDF processing
+      }
       const {rows,text,ocr}=await processPDF(FILES[i]);
       if(ocr)sb(i,'bocr','OCR...');
       lg(`  أصناف: ${rows.length}  |  ${ocr?'OCR':'رقمي'}`,rows.length>0?'lok':'ler');
